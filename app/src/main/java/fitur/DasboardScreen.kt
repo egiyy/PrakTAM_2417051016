@@ -26,47 +26,45 @@ import com.example.praktam_2417051016.model.CoffeeShop
 @Composable
 fun DashboardScreen(innerPadding: PaddingValues) {
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF8F5F2))
             .padding(innerPadding)
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        Text(
-            text = "Good Morning ☕",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
+        item {
+            Text(
+                text = "Good Morning Reggy ☕",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "What do you want to drink today",
+                color = Color.Gray,
+                fontSize = 14.sp
+            )
+        }
 
-        Text(
-            text = "Find your favorite coffee",
-            color = Color.Gray,
-            fontSize = 14.sp
-        )
+        // Search Bar
+        item {
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                placeholder = { Text("Search coffee...") },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = null)
+                },
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            placeholder = { Text("Search coffee...") },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = null)
-            },
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(Menu.coffeeList) { coffee ->
-                CoffeeCard(coffee)
-            }
+        // Coffee List
+        items(Menu.coffeeList) { coffee ->
+            CoffeeCard(coffee)
         }
     }
 }
