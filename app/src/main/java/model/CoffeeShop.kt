@@ -5,7 +5,8 @@ import androidx.annotation.DrawableRes
 data class CoffeeShop(
     val name: String,
     val description: String,
+    val size: String = "",
     val price: String,
     @DrawableRes val imageRes: Int,
-    val isFavorite: Boolean = false   // ← field baru untuk favorite
+    val isFavorite: Boolean = false
 )

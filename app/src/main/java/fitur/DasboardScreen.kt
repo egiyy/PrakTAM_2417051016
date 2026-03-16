@@ -4,18 +4,24 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -32,44 +38,72 @@ fun DashboardScreen(innerPadding: PaddingValues) {
 
     var coffeeList by remember { mutableStateOf(Menu.coffeeList) }
     var searchQuery by remember { mutableStateOf("") }
+    var selectedNav by remember { mutableStateOf(1) } // 0=Cart,1=Home,2=Menu,3=Profile
 
-    val filteredList = if (searchQuery.isEmpty()) {
-        coffeeList
-    } else {
-        coffeeList.filter { it.name.contains(searchQuery, ignoreCase = true) }
-    }
+    val filteredList = if (searchQuery.isEmpty()) coffeeList
+    else coffeeList.filter { it.name.contains(searchQuery, ignoreCase = true) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .background(Color(0xFFF5F0EB))
-    ) {
-
-        HeaderBanner(
-            searchQuery = searchQuery,
-            onSearchChange = { searchQuery = it }
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Menu Pilihan",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF3E1C00),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
+    Scaffold(
+        containerColor = Color(0xFFF7F7F7),
+        bottomBar = {
+            BottomNavBar(selected = selectedNav, onSelect = { selectedNav = it })
+        }
+    ) { scaffoldPadding ->
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(scaffoldPadding),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
+
+            // ── HEADER BANNER ──────────────────────────────────
+            item {
+                HeaderBanner(
+                    searchQuery = searchQuery,
+                    onSearchChange = { searchQuery = it }
+                )
+            }
+
+            // ── SECTION: NEW IN (LazyRow) ──────────────────────
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "New in",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1A1A1A),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp)
+                ) {
+                    items(coffeeList.take(4)) { coffee ->
+                        NewInCard(
+                            coffee = coffee,
+                            onAddClick = { /* TODO */ }
+                        )
+                    }
+                }
+            }
+
+            // ── SECTION: FREQUENTLY ORDERED (LazyColumn items) ─
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "frequently ordered",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1A1A1A),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
             items(filteredList, key = { it.name }) { coffee ->
-                CoffeeShopItem(
+                FrequentOrderItem(
                     coffee = coffee,
                     onFavoriteClick = {
                         coffeeList = coffeeList.map {
@@ -77,128 +111,182 @@ fun DashboardScreen(innerPadding: PaddingValues) {
                             else it
                         }
                     },
-                    onOrderClick = {
-                        // TODO: navigasi ke detail
-                    }
+                    onAddClick = { /* TODO */ },
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
                 )
             }
         }
     }
 }
 
+// ── HEADER BANNER ──────────────────────────────────────────────────
 @Composable
-fun HeaderBanner(
-    searchQuery: String,
-    onSearchChange: (String) -> Unit
-) {
+fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp)
+            .height(200.dp)
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFF2C4A6E), Color(0xFF3D6B8E))
+                    colors = listOf(Color(0xFF2C4A6E), Color(0xFF4A7A9B))
                 ),
-                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
+                shape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
             )
-            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+            .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
     ) {
-
+        // Dekorasi daun/lingkaran kanan atas
         Box(
             modifier = Modifier
-                .size(120.dp)
+                .size(110.dp)
                 .align(Alignment.TopEnd)
-                .offset(x = 20.dp, y = (-20).dp)
-                .background(
-                    color = Color(0xFF3D6B8E).copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(50)
-                )
+                .offset(x = 20.dp, y = (-15).dp)
+                .background(Color.White.copy(alpha = 0.08f), CircleShape)
         )
         Box(
             modifier = Modifier
-                .size(80.dp)
+                .size(75.dp)
                 .align(Alignment.TopEnd)
-                .offset(x = (-10).dp, y = 30.dp)
-                .background(
-                    color = Color(0xFF4A7A9B).copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(50)
-                )
+                .offset(x = (-15).dp, y = 40.dp)
+                .background(Color.White.copy(alpha = 0.07f), CircleShape)
         )
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-
             Column {
                 Text(
                     text = "Good Morning",
-                    fontSize = 22.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = "Reggy",
-                    fontSize = 22.sp,
+                    text = "Reggy!",
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "What do you want to drink today?☕",
+                    text = "What do you want to drink today?",
                     fontSize = 13.sp,
-                    color = Color.White.copy(alpha = 0.85f)
+                    color = Color.White.copy(alpha = 0.8f)
                 )
             }
 
+            // Search bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White, shape = RoundedCornerShape(50.dp))
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                    .shadow(4.dp, RoundedCornerShape(50.dp))
+                    .background(Color.White, RoundedCornerShape(50.dp))
+                    .padding(horizontal = 18.dp, vertical = 11.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BasicTextField(
                     value = searchQuery,
                     onValueChange = onSearchChange,
                     modifier = Modifier.weight(1f),
-                    textStyle = TextStyle(
-                        fontSize = 14.sp,
-                        color = Color(0xFF1A1A1A)
-                    ),
-                    decorationBox = { innerTextField ->
-                        if (searchQuery.isEmpty()) {
-                            Text(
-                                text = "Search",
-                                fontSize = 14.sp,
-                                color = Color(0xFF9E9E9E)
-                            )
-                        }
-                        innerTextField()
+                    textStyle = TextStyle(fontSize = 14.sp, color = Color(0xFF1A1A1A)),
+                    decorationBox = { inner ->
+                        if (searchQuery.isEmpty()) Text("Search", fontSize = 14.sp, color = Color(0xFFAAAAAA))
+                        inner()
                     }
                 )
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search",
-                    tint = Color(0xFF2C4A6E)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(30.dp)
+                        .background(Color(0xFF2C4A6E), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Search",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }
 }
 
+// ── NEW IN CARD (LazyRow - vertikal, gambar tidak terpotong) ───────
 @Composable
-fun CoffeeShopItem(
+fun NewInCard(coffee: CoffeeShop, onAddClick: () -> Unit) {
+    Card(
+        modifier = Modifier.width(120.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Gambar dengan aspect ratio — tidak terpotong
+            Image(
+                painter = painterResource(id = coffee.imageRes),
+                contentDescription = coffee.name,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),          // kotak penuh, tidak crop
+                contentScale = ContentScale.Fit // FIT supaya gambar utuh
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = coffee.name,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1A1A1A),
+                maxLines = 2,
+                lineHeight = 15.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Rp${coffee.price.replace("Rp", "").replace(".", "").replace(",000", "k").trim()}",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1A1A1A)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(26.dp)
+                        .background(Color(0xFFE53935), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ── FREQUENTLY ORDERED ITEM (LazyColumn - horizontal layout) ───────
+@Composable
+fun FrequentOrderItem(
     coffee: CoffeeShop,
     onFavoriteClick: () -> Unit,
-    onOrderClick: () -> Unit
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
@@ -207,68 +295,100 @@ fun CoffeeShopItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Box(modifier = Modifier.size(100.dp)) {
+            // Gambar — FIT supaya tidak terpotong
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFF5F0EB)),
+                contentAlignment = Alignment.Center
+            ) {
                 Image(
                     painter = painterResource(id = coffee.imageRes),
                     contentDescription = coffee.name,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                        .size(72.dp),
+                    contentScale = ContentScale.Fit   // FIT = gambar utuh
                 )
-
-                IconButton(
-                    onClick = onFavoriteClick,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = if (coffee.isFavorite)
-                            Icons.Filled.Favorite
-                        else
-                            Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint = if (coffee.isFavorite) Color.Red else Color.White
-                    )
-                }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
+            // Info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = coffee.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1A1A1A)
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = coffee.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF757575),
-                    maxLines = 2
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                if (coffee.size.isNotEmpty()) {
+                    Text(
+                        text = coffee.size,
+                        fontSize = 12.sp,
+                        color = Color(0xFF9E9E9E)
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = coffee.price,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF3E1C00)
+                    color = Color(0xFF1A8A1A)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = onOrderClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6B3A2A)
-                    )
+            }
+
+            // Tombol + merah
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .background(Color(0xFFE53935), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    onClick = onAddClick,
+                    modifier = Modifier.size(38.dp)
                 ) {
-                    Text(text = "Order", color = Color.White, fontSize = 13.sp)
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                        tint = Color.White
+                    )
                 }
             }
+        }
+    }
+}
+
+// ── BOTTOM NAVIGATION BAR ──────────────────────────────────────────
+@Composable
+fun BottomNavBar(selected: Int, onSelect: (Int) -> Unit) {
+    NavigationBar(
+        containerColor = Color.White,
+        tonalElevation = 8.dp
+    ) {
+        val items = listOf(
+            Pair(Icons.Filled.ShoppingCart, "Cart"),
+            Pair(Icons.Filled.Home, "Home"),
+            Pair(Icons.Filled.List, "Menu"),
+            Pair(Icons.Filled.Person, "Profile")
+        )
+        items.forEachIndexed { index, (icon, label) ->
+            NavigationBarItem(
+                selected = selected == index,
+                onClick = { onSelect(index) },
+                icon = {
+                    Icon(imageVector = icon, contentDescription = label)
+                },
+                label = { Text(label, fontSize = 11.sp) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Color(0xFF2C4A6E),
+                    selectedTextColor = Color(0xFF2C4A6E),
+                    indicatorColor = Color(0xFFE8F0F7),
+                    unselectedIconColor = Color(0xFFAAAAAA),
+                    unselectedTextColor = Color(0xFFAAAAAA)
+                )
+            )
         }
     }
 }
