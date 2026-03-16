@@ -6,5 +6,6 @@ data class CoffeeShop(
     val name: String,
     val description: String,
     val price: String,
-    @DrawableRes val imageRes: Int
+    @DrawableRes val imageRes: Int,
+    val isFavorite: Boolean = false   // ← field baru untuk favorite
 )

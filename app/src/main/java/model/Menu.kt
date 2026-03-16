@@ -3,43 +3,42 @@ package com.example.praktam_2417051016.model
 import com.example.praktam_2417051016.R
 
 object Menu {
-
     val coffeeList = listOf(
-
         CoffeeShop(
-            name = "Kopi Gula Aren",
-            description = "Kopi gula aren pekat dengan aroma khas.",
+            name = "Americano",
+            description = "Kopi robusta dengan aroma khas.",
             price = "Rp25.000",
-            imageRes = R.drawable.coffe
+            imageRes = R.drawable.americano
         ),
-
         CoffeeShop(
-            name = "Matcha Latte",
-            description = "Minuman matcha khas Jepang yang creamy.",
+            name = "Butterscotch",
+            description = "Rasa manis creamy dari campuran gula cokelat dan mentega, dengan aroma khas.",
             price = "Rp30.000",
-            imageRes = R.drawable.matcha
+            imageRes = R.drawable.butterscotch
         ),
-
-        CoffeeShop(
-            name = "Blueberry Milkshake",
-            description = "Milkshake blueberry segar dan manis.",
-            price = "Rp30.000",
-            imageRes = R.drawable.milksake
-        ),
-
         CoffeeShop(
             name = "Caramel Latte",
-            description = "Perpaduan espresso, foam susu dan caremel.",
-            price = "Rp28.000",
+            description = "Minuman kopi espresso dengan susu dan sirup karamel.",
+            price = "Rp30.000",
             imageRes = R.drawable.caramel_latte
         ),
-
         CoffeeShop(
-            name = "Starawberry Farappuccino",
-            description = "Minuman segar dengan rasa stroberi manis yang creamy.",
+            name = "Vanila Latte",
+            description = "Minuman kopi espresso dengan susu dan sirup vanilla.",
+            price = "Rp28.000",
+            imageRes = R.drawable.vanila_latte
+        ),
+        CoffeeShop(
+            name = "Chocolate",
+            description = "Minuman cokelat manis dengan rasa lembut dan creamy.",
             price = "Rp32.000",
-            imageRes = R.drawable.strawberry_frappuccino
+            imageRes = R.drawable.chocolate
+        ),
+        CoffeeShop(
+            name = "Matcha",
+            description = "Minuman teh hijau bubuk khas Jepang dengan rasa lembut dan sedikit pahit.",
+            price = "Rp32.000",
+            imageRes = R.drawable.matcha
         )
-
     )
 }
