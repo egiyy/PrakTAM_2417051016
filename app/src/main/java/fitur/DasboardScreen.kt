@@ -57,7 +57,6 @@ fun DashboardScreen(innerPadding: PaddingValues) {
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
 
-            // ── HEADER BANNER ──────────────────────────────────
             item {
                 HeaderBanner(
                     searchQuery = searchQuery,
@@ -65,7 +64,6 @@ fun DashboardScreen(innerPadding: PaddingValues) {
                 )
             }
 
-            // ── SECTION: NEW IN (LazyRow) ──────────────────────
             item {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -89,7 +87,6 @@ fun DashboardScreen(innerPadding: PaddingValues) {
                 }
             }
 
-            // ── SECTION: FREQUENTLY ORDERED (LazyColumn items) ─
             item {
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
@@ -119,7 +116,6 @@ fun DashboardScreen(innerPadding: PaddingValues) {
     }
 }
 
-// ── HEADER BANNER ──────────────────────────────────────────────────
 @Composable
 fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
     Box(
@@ -134,7 +130,7 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
             )
             .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
     ) {
-        // Dekorasi daun/lingkaran kanan atas
+
         Box(
             modifier = Modifier
                 .size(110.dp)
@@ -177,7 +173,6 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
                 )
             }
 
-            // Search bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -214,7 +209,6 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
     }
 }
 
-// ── NEW IN CARD (LazyRow - vertikal, gambar tidak terpotong) ───────
 @Composable
 fun NewInCard(coffee: CoffeeShop, onAddClick: () -> Unit) {
     Card(
@@ -227,14 +221,14 @@ fun NewInCard(coffee: CoffeeShop, onAddClick: () -> Unit) {
             modifier = Modifier.padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Gambar dengan aspect ratio — tidak terpotong
+
             Image(
                 painter = painterResource(id = coffee.imageRes),
                 contentDescription = coffee.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f),          // kotak penuh, tidak crop
-                contentScale = ContentScale.Fit // FIT supaya gambar utuh
+                    .aspectRatio(1f),
+                contentScale = ContentScale.Fit
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
@@ -275,7 +269,6 @@ fun NewInCard(coffee: CoffeeShop, onAddClick: () -> Unit) {
     }
 }
 
-// ── FREQUENTLY ORDERED ITEM (LazyColumn - horizontal layout) ───────
 @Composable
 fun FrequentOrderItem(
     coffee: CoffeeShop,
@@ -295,7 +288,7 @@ fun FrequentOrderItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Gambar — FIT supaya tidak terpotong
+
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -314,7 +307,6 @@ fun FrequentOrderItem(
 
             Spacer(modifier = Modifier.width(14.dp))
 
-            // Info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = coffee.name,
@@ -338,7 +330,6 @@ fun FrequentOrderItem(
                 )
             }
 
-            // Tombol + merah
             Box(
                 modifier = Modifier
                     .size(38.dp)
@@ -360,7 +351,6 @@ fun FrequentOrderItem(
     }
 }
 
-// ── BOTTOM NAVIGATION BAR ──────────────────────────────────────────
 @Composable
 fun BottomNavBar(selected: Int, onSelect: (Int) -> Unit) {
     NavigationBar(
