@@ -165,7 +165,7 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
                     color = Color.White
                 )
                 Text(
-                    text = "Coffee Lover! ☕",
+                    text = "Reggy! ☕",
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
