@@ -11,11 +11,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,19 +34,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.praktam_2417051016.model.CoffeeShop
 import com.example.praktam_2417051016.model.Menu
+import com.example.praktam_2417051016.ui.theme.BannerEnd
+import com.example.praktam_2417051016.ui.theme.BannerStart
+import com.example.praktam_2417051016.ui.theme.CoffeeAccent
+import com.example.praktam_2417051016.ui.theme.CoffeeCardBg
+import com.example.praktam_2417051016.ui.theme.CoffeePriceGreen
+import com.example.praktam_2417051016.ui.theme.CoffeeSubtleText
 
 @Composable
 fun DashboardScreen(innerPadding: PaddingValues) {
 
     var coffeeList by remember { mutableStateOf(Menu.coffeeList) }
     var searchQuery by remember { mutableStateOf("") }
-    var selectedNav by remember { mutableStateOf(1) } // 0=Cart,1=Home,2=Menu,3=Profile
+    var selectedNav by remember { mutableStateOf(1) }
 
     val filteredList = if (searchQuery.isEmpty()) coffeeList
     else coffeeList.filter { it.name.contains(searchQuery, ignoreCase = true) }
 
     Scaffold(
-        containerColor = Color(0xFFF7F7F7),
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             BottomNavBar(selected = selectedNav, onSelect = { selectedNav = it })
         }
@@ -68,9 +76,9 @@ fun DashboardScreen(innerPadding: PaddingValues) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = "New in",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1A1A),
+                    style = MaterialTheme.typography.titleLarge,
+
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -91,9 +99,8 @@ fun DashboardScreen(innerPadding: PaddingValues) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     text = "frequently ordered",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1A1A),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -124,13 +131,12 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
             .height(200.dp)
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFF2C4A6E), Color(0xFF4A7A9B))
+                    colors = listOf(BannerStart, BannerEnd)
                 ),
                 shape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
             )
             .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
     ) {
-
         Box(
             modifier = Modifier
                 .size(110.dp)
@@ -155,20 +161,18 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
             Column {
                 Text(
                     text = "Good Morning",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
                 Text(
-                    text = "Reggy!",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = "Coffee Lover! ☕",
+                    style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "What do you want to drink today?",
-                    fontSize = 13.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.8f)
                 )
             }
@@ -177,7 +181,10 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(4.dp, RoundedCornerShape(50.dp))
-                    .background(Color.White, RoundedCornerShape(50.dp))
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(50.dp)
+                    )
                     .padding(horizontal = 18.dp, vertical = 11.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -185,16 +192,25 @@ fun HeaderBanner(searchQuery: String, onSearchChange: (String) -> Unit) {
                     value = searchQuery,
                     onValueChange = onSearchChange,
                     modifier = Modifier.weight(1f),
-                    textStyle = TextStyle(fontSize = 14.sp, color = Color(0xFF1A1A1A)),
+                    textStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
                     decorationBox = { inner ->
-                        if (searchQuery.isEmpty()) Text("Search", fontSize = 14.sp, color = Color(0xFFAAAAAA))
+                        if (searchQuery.isEmpty()) {
+                            Text(
+                                "Search",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = CoffeeSubtleText
+                            )
+                        }
                         inner()
                     }
                 )
                 Box(
                     modifier = Modifier
                         .size(30.dp)
-                        .background(Color(0xFF2C4A6E), CircleShape),
+                        .background(BannerStart, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -215,13 +231,15 @@ fun NewInCard(coffee: CoffeeShop, onAddClick: () -> Unit) {
         modifier = Modifier.width(120.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        // surface dari MaterialTheme
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier.padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Image(
                 painter = painterResource(id = coffee.imageRes),
                 contentDescription = coffee.name,
@@ -233,9 +251,8 @@ fun NewInCard(coffee: CoffeeShop, onAddClick: () -> Unit) {
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = coffee.name,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1A1A1A),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 lineHeight = 15.sp
             )
@@ -246,15 +263,15 @@ fun NewInCard(coffee: CoffeeShop, onAddClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Rp${coffee.price.replace("Rp", "").replace(".", "").replace(",000", "k").trim()}",
-                    fontSize = 12.sp,
+                    text = coffee.price,
+                    style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1A1A)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Box(
                     modifier = Modifier
                         .size(26.dp)
-                        .background(Color(0xFFE53935), CircleShape),
+                        .background(CoffeeAccent, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -280,7 +297,9 @@ fun FrequentOrderItem(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier
@@ -288,20 +307,18 @@ fun FrequentOrderItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Box(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF5F0EB)),
+                    .background(CoffeeCardBg),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(id = coffee.imageRes),
                     contentDescription = coffee.name,
-                    modifier = Modifier
-                        .size(72.dp),
-                    contentScale = ContentScale.Fit   // FIT = gambar utuh
+                    modifier = Modifier.size(72.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
 
@@ -310,30 +327,29 @@ fun FrequentOrderItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = coffee.name,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1A1A)
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (coffee.size.isNotEmpty()) {
                     Text(
                         text = coffee.size,
-                        fontSize = 12.sp,
-                        color = Color(0xFF9E9E9E)
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CoffeeSubtleText
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = coffee.price,
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A8A1A)
+                    color = CoffeePriceGreen
                 )
             }
 
             Box(
                 modifier = Modifier
                     .size(38.dp)
-                    .background(Color(0xFFE53935), CircleShape),
+                    .background(CoffeeAccent, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
@@ -354,7 +370,7 @@ fun FrequentOrderItem(
 @Composable
 fun BottomNavBar(selected: Int, onSelect: (Int) -> Unit) {
     NavigationBar(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 8.dp
     ) {
         val items = listOf(
@@ -367,16 +383,16 @@ fun BottomNavBar(selected: Int, onSelect: (Int) -> Unit) {
             NavigationBarItem(
                 selected = selected == index,
                 onClick = { onSelect(index) },
-                icon = {
-                    Icon(imageVector = icon, contentDescription = label)
+                icon = { Icon(imageVector = icon, contentDescription = label) },
+                label = {
+                    Text(label, style = MaterialTheme.typography.bodySmall)
                 },
-                label = { Text(label, fontSize = 11.sp) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF2C4A6E),
-                    selectedTextColor = Color(0xFF2C4A6E),
-                    indicatorColor = Color(0xFFE8F0F7),
-                    unselectedIconColor = Color(0xFFAAAAAA),
-                    unselectedTextColor = Color(0xFFAAAAAA)
+                    selectedIconColor   = MaterialTheme.colorScheme.primary,
+                    selectedTextColor   = MaterialTheme.colorScheme.primary,
+                    indicatorColor      = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    unselectedIconColor = CoffeeSubtleText,
+                    unselectedTextColor = CoffeeSubtleText
                 )
             )
         }
