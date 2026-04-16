@@ -14,8 +14,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             PrakTAM_2417051016Theme() {
-                Scaffold { innerPadding ->
-                    DashboardScreen(innerPadding)
+                Scaffold {
+                    DashboardScreen()
                 }
             }
         }
